@@ -34,21 +34,16 @@
 		Link to Webpage: <a href="https://swetha2022.github.io/monetification-website/184projectmilestone/">https://swetha2022.github.io/monetification-website/184projectmilestone/</a><br>
 		Link to 2-3 Slides: <a href="https://docs.google.com/presentation/d/1A60O-lusOFJWJjtaC7iy3ZVPK37Pw2YcsaYU_26AQHw/edit?usp=sharing">https://docs.google.com/presentation/d/1A60O-lusOFJWJjtaC7iy3ZVPK37Pw2YcsaYU_26AQHw/edit?usp=sharing</a><br>
 		Link to Longer Slides: <a href="https://docs.google.com/presentation/d/1nfl5qphP929bE5movQ1QJyIsSEbye_AqZ3orOLnOJ6w/edit?usp=sharing">https://docs.google.com/presentation/d/1nfl5qphP929bE5movQ1QJyIsSEbye_AqZ3orOLnOJ6w/edit?usp=sharing</a><br>
-		Link to Video: <a href="">TODO</a>
+		Link to Video: <a href="https://drive.google.com/file/d/1OMpukEdlFDMvbpen4X5DGznMRdn7cy19/view?usp=sharing">https://drive.google.com/file/d/1OMpukEdlFDMvbpen4X5DGznMRdn7cy19/view?usp=sharing</a>
 
 		<br>
 
 		<!--
 		We've already added one heading per part, to make your write-up as navigable when grading. Please fit your write-up within these sections!
 		-->
-
-		<h2>Monet-ification Overview</h2>
-
-		<p>In our project, we aim to convert real-life photographs into impressionist art similar to Claude Monet's work. We will work with core graphics pipeline techniques, such as rasterization, image sampling, and texture mapping to break down photographs into their pixel components and simulate impressionistic art and color blending when rendering the scene.</p>
-
 		<h2>Current Accomplishments</h2>
 
-
+		<p>We developed the first version of our generative painting algorithm that reconstructs a reference image by iteratively adding ellipses to a blank canvas. The approach aims to imitate Claude Monet's work, and relies on a custom loss function that draws ellipses based on regions of the canvas that deviate most from the target image. At each step, the algorithm estimates the appropriate color for the selected location and draws an oval, progressively building the image. To improve efficiency and prevent redundant rendering, we implemented a bias mask that tracks untouched pixels. This prioritizes parts of our canvas that are unpainted. While the method successfully produces a splotchy, impressionistic aesthetic reminiscent of Monet, it struggles with detail preservation and color accuracy. We also experiment with the color palette of our image by generating a grayscale image, computing its gradient using a Pointillism-inspired vector field, then smoothing it out with a radius of 15(variable parameter). For each random center, the gradient and a stroke scale of 4(variable parameter) determine the angle and size of an ellipse. Sharper changes produce smaller ellipses, preserving detail, while smoother areas allow larger ones. Additionally, the randomness of ellipse generation can result in uncovered white space, particularly in low-density areas. We are currently exploring the next version of our algorithm that does a better job of imitating Monet's work.</p>
 
 		<h2>Preliminary Results</h2>
 
@@ -56,16 +51,6 @@
 		
 		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="./imgs/image2.jpg" width="400px"/>
-				  <figcaption><i>Lake</i></figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="./renders/render_image2.jpg" width="400px"/>
-				  <figcaption><i>Monetified Lake Render</i></figcaption>
-				</td>
-			  </tr>
               <tr>
 				<td style="text-align: center;">
 				  <img src="./imgs/image3.jpg" width="400px"/>
@@ -84,8 +69,13 @@
 		So far, our baseline algorithm aims to reduce loss between the reference image and the image we are created. On top of this, we experiment with several techniques to make the rendered image look more like Monet's work. For example, we build up the image with many smaller ellipses to imitate Monet's more discrete changes in color, as well as a filtered color palette that is a result of processing our reference image. Overall, the results we have as a baseline are pretty good, but we plan to explore more color blending, drawing brush stroke features, and neural networks to give us better results than a reference image based loss function.
 		<br><br>
 
-		Future Work Plan: 
-		<h2>Resources</h2>
+		<b>Future Work Plan:</b><br><br>
+
+		April 18 - 25th: Adapt stroke size/shape to better render fine details like thin lines + use texture mapping to simulate real paint strokes and overlaps + Incorporate blends between multiple colors, rather than limiting it to just two.<br>
+		April 26 - May 1st: Neural Network exploration. Train multiple models on Monet's work, and incorporate it into our loss function.<br>
+		May 1st - May 4th: Submission.<br>
+
+		<!-- <h2>Resources</h2>
 		
 		<ul>
             <li>Pointillism: <a href ="https://github.com/matteo-ronchetti/Pointillism/tree/master">https://github.com/matteo-ronchetti/Pointillism/tree/master</a></li>
@@ -97,7 +87,7 @@
             <li>Monet Palette: <a href="https://www.overstockart.com/blog/analyzing-claude-monet-oil-paintings-colors-subjects-and-misconceptions/?srsltid=AfmBOopZ6UeVva4BdzFxD8vAmUKjfVRveC5rqbAPYdhM7sCOm8r6zvDF">https://www.overstockart.com/blog/analyzing-claude-monet-oil-paintings-colors-subjects-and-misconceptions/?srsltid=AfmBOopZ6UeVva4BdzFxD8vAmUKjfVRveC5rqbAPYdhM7sCOm8r6zvDF</a></li>
             <li>Color Register: <a href="https://color-register.org/color/">https://color-register.org/color/</a></li>
             <li>HTML Color Codes: <a href="https://htmlcolorcodes.com/colors/">https://htmlcolorcodes.com/colors/</a></li>
-		</ul>
+		</ul> -->
 
 		</div>
 	</body>
