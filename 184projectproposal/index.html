@@ -1,0 +1,135 @@
+<html>
+	<head>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+		<style>
+			h1 {
+				text-align: center;
+			}
+
+			.container {
+				margin: 0 auto;
+				padding: 60px 20%;
+			}
+
+			figure {
+				text-align: center;
+			}
+
+			img {
+				display: inline-block;
+			}
+
+			body {
+				font-family: 'Inter', sans-serif;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+		<h1>Monet-ification</h1>
+		<div style="text-align: center;">Names: Rohan Aanegola, Swetha Rajkumar, Inas Zulaikha Anwar, Mihir Rao</div>
+
+		<br>
+
+		Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-swetha-inas-1/184project/">https://cal-cs184-student.github.io/hw-webpages-swetha-inas-1/184project/</a>
+
+		<br>
+
+		<!--
+		We've already added one heading per part, to make your write-up as navigable when grading. Please fit your write-up within these sections!
+		-->
+
+		<h2>Monet-ification Overview</h2>
+
+		<p>In our project, we aim to convert real-life photographs into impressionist art similar to Claude Monet’s work. We will work with core graphics pipeline techniques, such as rasterization, image sampling, and texture mapping to break down photographs into their pixel components and simulate impressionistic art and color blending when rendering the scene.</p>
+
+		<h2>Problem Description</h2>
+		<p>Our project aims to create impressionist renderings of real-life photographs. This is both an important and fascinating challenge as having the capability to reinterpret images with Monet's impressionist style bridges two eras together, introducing artistic styles of the past to newer generations and connecting contemporary life with historical art. When people reimagine their own photos in past styles, they gain a deeper appreciation for the art. It also empowers creativity and provides interactive experiences of digital art to users. We are planning to solve this problem by using techniques covered in class such as rasterization, blurring, sampling, color theory, texture mapping, and bezier curves/interpolation. The key challenge of this project is generating these impressionist renders while maintaining the integrity of the image. </p>
+
+		<h2>Goals and Deliverables</h2>
+		<p>Below is an image depicting tea plants with young leaves silhouetted against a vibrant orange and yellow sunset.</p>
+
+		<figure>
+			<img src="photo.jpg" alt="Image of tea plants" style="width:50%"/>
+			<figcaption>Tea plants under a sunset</figcaption>
+		</figure>
+
+
+		<p>Our project's goal is to output something along the lines of the image below, which was generated using Imagen3, but with better attention to detail. As seen below, this impressionist rendering is not entirely accurate. For instance, the tea plant in the foreground is now moved to the center whereas it was previously on the left side of the original image. Also, the tree in the background which was previously blurred no longer exists. Additionally, some other details like the shadows of the tree in the background are completely missing from the recreated image. Our project aims to mitigate these issues by creating more realistic renders using graphics techniques learned in class.</p>
+
+
+		<figure>
+			<img src="imagen.jpg" alt="Imagen Impressionist Render" style="width:50%"/>
+			<figcaption>Imagen Impressionist Render</figcaption>
+		</figure>
+
+		<p>Our project is non-interactive, however, users will be able to upload an image through our pipeline which will then get monet-ified. There aren't any great quantitative metrics to measure how good our generated art would be due to the subjective nature of the topic, so we might have to settle on qualitative metrics. One way of gauging how good our painting is is using GPT to evaluate it by comparing it to a real impressionistic painting (created by Monet, for example) and describing a similar scene. Another way is to simply eyeball it and observe key qualities of impressionism such as brush strokes, distinct colors, non-realism, etc.</p>
+
+		<p>We plan to explore various parts of art and computer graphics in order to generate the most realistic images possible. In order for us to generate realistic monet art from a reference image, we need to know what that actually means.</p>
+
+		<ul>
+			<li>What are the objective features of the artwork that make monet's work look impressionistic</li>
+			<li>How long are the brush strokes</li>
+			<li>What color palette does monet use</li>
+			<li>Gradients/color blending - how does Monet choose neighboring color combinations to imitate realistic gradients</li>
+		</ul>
+
+		<p>Once we figure out what it actually means to have artwork be impressionistic, we can try to imitate those features in our work. Some ideas we have include sampling and aliasing theory we learned in class to estimate monet-style features for parts of the image that are high or low frequency, respectively. We'd need to account for what parts of the image change in color, how frequently, and use that to develop an appropriate blend of color. Another example could be how we might imitate his brush strokes. Many examples of monet's work include non-rigid subjects(flowers, dresses, water, etc…) and to model them correctly would require complex brush strokes. Our initial thought is to use bezier curves and splines to try and create a more accurate representation.</p>
+
+		<b>What we plan to deliver and what we hope to deliver:</b>
+	
+		<ul>
+			<li>We plan to deliver a tool that takes a realistic image as input and outputs an impressionistic version of that image as output. While our deliverable most likely won't create impressionistic art as good as Monet's, we hope to still create a mostly deterministic tool (so not too much AI generation) that creates a non-photorealistic image that has some properties of impressionism like visible brush strokes and simplified form. Some flaws might include altering details in the input scene, coarse brush strokes, etc.</li> 
+			<li>If things go well, our generated art should have more properties of impressionism like non-blended colors and “noise” (either in the form of blur or brush stroke jitter) often seen in real paintings. Ideally, it should still look like it captured the same scene as the one inputted to the tool.</li>
+		</ul>
+
+
+		<h2>Schedule</h2>
+
+		<b>Week 1: Create Project Skeleton</b>
+			
+		<p>We can use homework templating that already creates the render screen and the ability to write RGB colors to the screen buffer. Overall, this task includes:<p>
+
+		<ul>
+			<li>The ability to upload an input image</li>
+			<li>Code traces the input image</li>
+			<li>Outputs the same input image with some noise (to show we processed the image)</li>
+		</ul>
+
+		<b>Week 2: Brush stroke pipeline</b>
+
+		<ul>
+			<li>Read the image NxN pixels at a time</li>
+			<li>Identify colors in the image</li>
+			<li>Based on these colors, create a filter to figure out where the respective colors are in the image.</li>
+			<li>Use splines to model large components(segments) of color, similar to how a SAM mask works</li>
+		</ul>
+
+		<b>Week 3: Color pipeline:</b>
+
+		<ul>
+			<li>Given a data structure representation of all the brush strokes in the image, add noise and monet-style blurring, gradients, and other determined modifications to the brush strokes</li>
+			<li>Render the previous result onto the screen buffer</li>
+			<li>Any final post-image processing / blurring to make the overall image more consistent in terms of color and frequency.</li>
+		</ul>
+
+		<b>Week 4:Fine Tuning:</b>
+		
+		<ul>
+			<li>Edit parts of the pipeline to make the images as realistic as possible</li>
+		</ul>
+
+
+		<h2>Resources</h2>
+		
+		<ul>
+			<li>Stroke based rendering: <a href="https://www.cs.ucdavis.edu/~ma/SIGGRAPH02/course23/notes/S02c23_3.pdf">https://www.cs.ucdavis.edu/~ma/SIGGRAPH02/course23/notes/S02c23_3.pdf</a></li>
+			<li>Characteristics of impressionism for reference: <a href="https://arthistorywithalder.com/impressionism-art-characteristics/">https://arthistorywithalder.com/impressionism-art-characteristics/</a></li>
+			<li>PBRT to refer to in times of crisis: <a href="https://www.pbrt.org/">https://www.pbrt.org/</a></li>
+			<li>OpenCV: <a href="https://opencv.org/">https://opencv.org/</a></li>
+		</ul>
+
+		</div>
+	</body>
+</html>
