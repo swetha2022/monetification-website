@@ -50,12 +50,10 @@
 		<p> Therefore, our next step was to design a new color palette based on Monet's most frequently used pigments: Titanium White, Cadmium Yellow Light, Cadmium Yellow, Viridian Green, Emerald Green, French Ultramarine, Cobalt Blue, Madder Red, Vermillion, and Ivory Black. We obtained RGB values for each of these colors and stored them in a dictionary with the color names as keys. To simulate the effect of mixing colors in a physical palette, we generated intermediate hues by linearly interpolating between every pair of base colors using weights from <strong>np.linspace(0.05, 0.95, 19)</strong>. This process produced a richer and more continuous range of blended colors. For each pixel in the original image, we computed soft similarity probabilities to each color in our expanded Monet palette. To ensure perceptual accuracy, we first converted both the original image colors and palette colors from RGB to the <strong>CIELAB</strong> color space—a perceptually uniform space—before computing Euclidean distances. These distances were then used to assign soft similarity weights. For each ellipse, we mapped the pixel colors within its region to their most probable Monet matches using this probability matrix. The color of the ellipse was then set to the average of these matched palette colors. We also modified our loss to be calculated as the sum of squared differences between the candidate canvas and a version of the reference image where each pixel has been replaced with its closest Monet-inspired color. This encourages the generated image to match the style and palette of Monet rather than the original image. To vary ellipse sizes based on local image detail, we implemented a Pointillism-inspired algorithm. The input image was first converted to grayscale and smoothed with a Gaussian blur (<strong>cv2.GaussianBlur</strong>) using a <strong>gradient_smoothing_radius</strong> of 15. We then computed image gradients using <strong>cv2.Scharr</strong> to construct a vector field. Each candidate ellipse center was assigned a size and orientation based on local gradient magnitude and direction, scaled by a <strong>stroke_scale</strong> of 4:</p>
 		  
 		<pre><code>
-		<strong>length</strong> = int(round(<strong>args.stroke_scale</strong> + <strong>args.stroke_scale</strong> * math.sqrt(<strong>gradient.magnitude(center[1], center[0])</strong>)))
-		</code></pre>
-	
-		<pre><code>
-		<strong>angle</strong> = <strong>gradient.direction(center[1], center[0])</strong> + (np.pi / 2)
-		<strong>size</strong> = (<strong>length</strong>, <strong>args.stroke_scale</strong>)
+		<strong>length = int(round(args.stroke_scale + args.stroke_scale * math.sqrt(gradient.magnitude(center[1], center[0]))))</strong>
+
+		<strong>angle = gradient.direction(center[1], center[0]) + (np.pi / 2)</strong> 
+		<strong>size = (length, args.stroke_scale)</strong>
 		</code></pre>
 
 		<p>
@@ -65,9 +63,7 @@
 		<pre><code>
 		<strong>def direction(self, i, j):</strong>
 			<strong>return math.atan2(self.fieldy[i, j], self.fieldx[i, j])</strong>
-		</code></pre>
-		
-		<pre><code>
+
 		<strong>def magnitude(self, i, j):</strong>
 			<strong>return math.hypot(self.fieldx[i, j], self.fieldy[i, j])</strong>
 		</code></pre>
