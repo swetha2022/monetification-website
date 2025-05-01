@@ -32,24 +32,26 @@
 
 		<br>
 		Link to Webpage: <a href="https://swetha2022.github.io/monetification-website/184projectmilestone/">https://swetha2022.github.io/monetification-website/184projectmilestone/</a><br>
-        Link to Presentation Slides: <a href="https://docs.google.com/presentation/d/1A60O-lusOFJWJjtaC7iy3ZVPK37Pw2YcsaYU_26AQHw/edit?usp=sharing">https://docs.google.com/presentation/d/1A60O-lusOFJWJjtaC7iy3ZVPK37Pw2YcsaYU_26AQHw/edit?usp=sharing</a><br>
-        Link to Recording: <a href="https://drive.google.com/file/d/1OMpukEdlFDMvbpen4X5DGznMRdn7cy19/view?usp=sharing">https://drive.google.com/file/d/1OMpukEdlFDMvbpen4X5DGznMRdn7cy19/view?usp=sharing</a>
-        Link to Recording Slides: <a href="https://docs.google.com/presentation/d/1nfl5qphP929bE5movQ1QJyIsSEbye_AqZ3orOLnOJ6w/edit?usp=sharing">https://docs.google.com/presentation/d/1nfl5qphP929bE5movQ1QJyIsSEbye_AqZ3orOLnOJ6w/edit?usp=sharing</a><br>
-
+        Link to Project Video Slides: <a href="https://docs.google.com/presentation/d/1A60O-lusOFJWJjtaC7iy3ZVPK37Pw2YcsaYU_26AQHw/edit?usp=sharing">https://docs.google.com/presentation/d/1A60O-lusOFJWJjtaC7iy3ZVPK37Pw2YcsaYU_26AQHw/edit?usp=sharing</a><br>
+        Link to Project Video Recording: <a href="https://drive.google.com/file/d/1OMpukEdlFDMvbpen4X5DGznMRdn7cy19/view?usp=sharing">https://drive.google.com/file/d/1OMpukEdlFDMvbpen4X5DGznMRdn7cy19/view?usp=sharing</a>
 		<br>
 
 		<!--
 		We've already added one heading per part, to make your write-up as navigable when grading. Please fit your write-up within these sections!
 		-->
-		<h2>Current Accomplishments</h2>
+		<h2>Abstract</h2>
+
+		<p>Our system creates impressionist renderings of real-life photographs similar to Claude Monet's work. This is both an important and fascinating challenge as having the capability to reinterpret images with Monet's impressionist style bridges two eras together, introducing artistic styles of the past to newer generations and connecting contemporary life with historical art. When people reimagine their own photos in past styles, they gain a deeper appreciation for the art. It also empowers creativity and provides interactive experiences of digital art to users. Our implementation uses techniques covered in class such as rasterization, sampling, antialiasing, low/high pass filters, coordinate system transforms, color theory, texture mapping, barycentric coordinates, and linear interpolation. The key challenge of this project was generating these impressionist renders while maintaining the integrity of the image.</p>
+
+		<h2>Technical Approach</h2>
 
 		<p>We developed the first version of our generative painting algorithm that reconstructs a reference image by iteratively adding ellipses to a blank canvas. The approach aims to imitate Claude Monet's work, and relies on a custom loss function that draws ellipses based on regions of the canvas that deviate most from the target image. At each step, the algorithm estimates the appropriate color for the selected location and draws an oval, progressively building the image. To improve efficiency and prevent redundant rendering, we implemented a bias mask that tracks untouched pixels. This prioritizes parts of our canvas that are unpainted. While the method successfully produces a splotchy, impressionistic aesthetic reminiscent of Monet, it struggles with detail preservation and color accuracy. Therefore, we designed a new color palette based on Monet’s most frequently used colors, with additional blends created by linearly interpolating between each pair. To map reference image colors to this palette, we compute soft probabilities indicating similarity to each palette color. For each ellipse, we convert pixel colors within its area to their most probable Monet match, then set the ellipse color to the average of these matches. To vary ellipse sizes according to image detail, we implemented a Pointillism-inspired algorithm. The input image is converted to grayscale, and its gradient—smoothed using a gradient_smoothing_radius of 15—is calculated from a vector field. For each candidate ellipse center, the local gradient and a stroke_scale of 4 determine the ellipse’s angle and size. This ensures that regions in the image with sharper or faster changes produce smaller ellipses, while areas with minimal variation result in larger ellipses, ultimately preserving sufficient detail in the final render. The randomness in choosing centers for each ellipse can result in uncovered white space, particularly in low-density areas. We are currently exploring the next version of our algorithm that does a better job of imitating Monet's work.</p>
 
-		<h2>Preliminary Results</h2>
+		<h2>Results</h2>
 
-        <p>Below is an example of an image and our Monetified render:</p>
+        <p>Below are some examples of images and their Monetified renders:</p>
 		
-		<div style="display: flex; flex-direction: column; align-items: center;">
+		<!-- <div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
               <tr>
 				<td style="text-align: center;">
@@ -62,31 +64,39 @@
 				</td>
 			  </tr>
 			</table>
-		</div>
+		</div> -->
 
-		<h2>Progress Reflection and Updated Work Plan</h2>
+		<p>Below is a video clip of our render generation:</p>
 
-		<p>So far, our baseline algorithm focuses on minimizing the loss between the image we generate and the reference image after converting its color pixels to their closest equivalents in our Monet palette. We also experimented with several techniques to make the rendered image more closely resemble Monet's style. For instance, we constructed the image using many smaller ellipses to mimic Monet's subtle, discrete color transitions, employed a carefully curated color palette, and implemented advanced stroke generation to adjust ellipse size based on the local frequency of the surrounding area. Overall, our baseline results are quite promising. Moving forward, we plan to explore additional enhancements, such as improved color blending, incorporating primitives beyond ellipses, simulating brush stroke characteristics, and leveraging neural networks to achieve better results.</p>
-
-		<b>Future Work Plan:</b><br>
-
-		<br><b>April 18 to April 25:</b> Incorporate different stroke primitives for fine details, add texture mapping for paint effects, and blend multiple colors<br><b>April 26 to May 1:</b> Train neural nets on Monet and integrate learned models into the loss function<br><b>May 1 to May 4:</b> Final submission
-
-		  
-
-		<!-- <h2>Resources</h2>
+		<h2>References</h2>
 		
 		<ul>
             <li>Pointillism: <a href ="https://github.com/matteo-ronchetti/Pointillism/tree/master">https://github.com/matteo-ronchetti/Pointillism/tree/master</a></li>
-            <li>Sketching with OpenCV: <a href="https://medium.com/data-science/painting-and-sketching-with-opencv-in-python-4293026d78b">https://medium.com/data-science/painting-and-sketching-with-opencv-in-python-4293026d78b</a></li>
 			<li>Stroke based rendering: <a href="https://www.cs.ucdavis.edu/~ma/SIGGRAPH02/course23/notes/S02c23_3.pdf">https://www.cs.ucdavis.edu/~ma/SIGGRAPH02/course23/notes/S02c23_3.pdf</a></li>
 			<li>Characteristics of impressionism for reference: <a href="https://arthistorywithalder.com/impressionism-art-characteristics/">https://arthistorywithalder.com/impressionism-art-characteristics/</a></li>
 			<li>PBRT to refer to in times of crisis: <a href="https://www.pbrt.org/">https://www.pbrt.org/</a></li>
-			<li>OpenCV: <a href="https://opencv.org/">https://opencv.org/</a></li>
             <li>Monet Palette: <a href="https://www.overstockart.com/blog/analyzing-claude-monet-oil-paintings-colors-subjects-and-misconceptions/?srsltid=AfmBOopZ6UeVva4BdzFxD8vAmUKjfVRveC5rqbAPYdhM7sCOm8r6zvDF">https://www.overstockart.com/blog/analyzing-claude-monet-oil-paintings-colors-subjects-and-misconceptions/?srsltid=AfmBOopZ6UeVva4BdzFxD8vAmUKjfVRveC5rqbAPYdhM7sCOm8r6zvDF</a></li>
+			<li>OpenCV: <a href="https://opencv.org/">https://opencv.org/</a></li>
+            <li>Sketching with OpenCV: <a href="https://medium.com/data-science/painting-and-sketching-with-opencv-in-python-4293026d78b">https://medium.com/data-science/painting-and-sketching-with-opencv-in-python-4293026d78b</a></li>
+			<li>OpenCV Image Gradients: <a href="https://pyimagesearch.com/2021/05/12/image-gradients-with-opencv-sobel-and-scharr/">https://pyimagesearch.com/2021/05/12/image-gradients-with-opencv-sobel-and-scharr/</a></li>
             <li>Color Register: <a href="https://color-register.org/color/">https://color-register.org/color/</a></li>
             <li>HTML Color Codes: <a href="https://htmlcolorcodes.com/colors/">https://htmlcolorcodes.com/colors/</a></li>
-		</ul> -->
+		</ul>
+
+		<h2>Team Member Contributions</h2>
+
+		<p>Rohan:</p>
+
+		
+		<p>Swetha:</p>
+
+
+		<p>Inas:</p>
+
+
+		<p>Mihir:</p>
+
+
 
 		</div>
 	</body>
