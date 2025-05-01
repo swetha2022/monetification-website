@@ -45,7 +45,41 @@
 
 		<h2>Technical Approach</h2>
 
-		<p>We developed the first version of our generative painting algorithm that reconstructs a reference image by iteratively adding ellipses to a blank canvas. The approach aims to imitate Claude Monet's work, and relies on a custom loss function that draws ellipses based on regions of the canvas that deviate most from the target image. At each step, the algorithm estimates the appropriate color for the selected location and draws an oval, progressively building the image. To improve efficiency and prevent redundant rendering, we implemented a bias mask that tracks untouched pixels. This prioritizes parts of our canvas that are unpainted. While the method successfully produces a splotchy, impressionistic aesthetic reminiscent of Monet, it struggles with detail preservation and color accuracy. Therefore, we designed a new color palette based on Monet’s most frequently used colors, with additional blends created by linearly interpolating between each pair. To map reference image colors to this palette, we compute soft probabilities indicating similarity to each palette color. For each ellipse, we convert pixel colors within its area to their most probable Monet match, then set the ellipse color to the average of these matches. To vary ellipse sizes according to image detail, we implemented a Pointillism-inspired algorithm. The input image is converted to grayscale, and its gradient—smoothed using a gradient_smoothing_radius of 15—is calculated from a vector field. For each candidate ellipse center, the local gradient and a stroke_scale of 4 determine the ellipse’s angle and size. This ensures that regions in the image with sharper or faster changes produce smaller ellipses, while areas with minimal variation result in larger ellipses, ultimately preserving sufficient detail in the final render. The randomness in choosing centers for each ellipse can result in uncovered white space, particularly in low-density areas. We are currently exploring the next version of our algorithm that does a better job of imitating Monet's work.</p>
+		<p>We developed the first version of our generative painting algorithm that reconstructs a reference image by iteratively adding ellipses to a blank canvas. The approach aims to imitate Claude Monet's work, and relies on a custom loss function that draws ellipses based on regions of the canvas that deviate most from the target image. At each step, the algorithm estimates the appropriate color for the selected location and draws an oval, progressively building the image. To improve efficiency and prevent redundant rendering, we implemented a bias mask that tracks untouched pixels. This prioritizes parts of our canvas that are unpainted. While the method successfully produces a splotchy, impressionistic aesthetic reminiscent of Monet, it struggles with detail preservation and color accuracy.</p>
+			
+		<p> Therefore, our next step was to design a new color palette based on Monet's most frequently used pigments: Titanium White, Cadmium Yellow Light, Cadmium Yellow, Viridian Green, Emerald Green, French Ultramarine, Cobalt Blue, Madder Red, Vermillion, and Ivory Black. We obtained RGB values for each of these colors and stored them in a dictionary with the color names as keys. To simulate the effect of mixing colors in a physical palette, we generated intermediate hues by linearly interpolating between every pair of base colors using weights from <strong>np.linspace(0.05, 0.95, 19)</strong>. This process produced a richer and more continuous range of blended colors. For each pixel in the original image, we computed soft similarity probabilities to each color in our expanded Monet palette. To ensure perceptual accuracy, we first converted both the original image colors and palette colors from RGB to the <strong>CIELAB</strong> color space—a perceptually uniform space—before computing Euclidean distances. These distances were then used to assign soft similarity weights. For each ellipse, we mapped the pixel colors within its region to their most probable Monet matches using this probability matrix. The color of the ellipse was then set to the average of these matched palette colors. We also modified our loss to be calculated as the sum of squared differences between the candidate canvas and a version of the reference image where each pixel has been replaced with its closest Monet-inspired color. This encourages the generated image to match the style and palette of Monet rather than the original image. To vary ellipse sizes based on local image detail, we implemented a Pointillism-inspired algorithm. The input image was first converted to grayscale and smoothed with a Gaussian blur (<strong>cv2.GaussianBlur</strong>) using a <strong>gradient_smoothing_radius</strong> of 15. We then computed image gradients using <strong>cv2.Scharr</strong> to construct a vector field. Each candidate ellipse center was assigned a size and orientation based on local gradient magnitude and direction, scaled by a <strong>stroke_scale</strong> of 4:</p>
+		  
+		<pre>
+		<strong>length</strong> = int(round(<strong>args.stroke_scale</strong> + <strong>args.stroke_scale</strong> * math.sqrt(<strong>gradient.magnitude(center[1], center[0])</strong>)))
+		
+		<strong>angle</strong> = <strong>gradient.direction(center[1], center[0])</strong> + (np.pi / 2)
+		<strong>size</strong> = (<strong>length</strong>, <strong>args.stroke_scale</strong>)
+		</pre>
+		
+		<p>
+		The <strong>magnitude</strong> and <strong>direction</strong> functions were defined as:
+		</p>
+		
+		<pre>
+		<strong>def direction(self, i, j):</strong>
+			<strong>return math.atan2(self.fieldy[i, j], self.fieldx[i, j])</strong>
+		
+		<strong>def magnitude(self, i, j):</strong>
+			<strong>return math.hypot(self.fieldx[i, j], self.fieldy[i, j])</strong>
+		</pre>
+		
+		<p>This approach ensures that areas with sharp transitions produce smaller, more detailed ellipses, while smoother regions use larger ellipses—preserving essential visual structure in the final rendering.</p>
+		  
+		<p>The randomness in choosing centers for each ellipse can result in uncovered white space, particularly in low-density areas..... [TODO Mihir to explain approach]</p>
+
+		<p>To make the output resemble a painting more closely, we added realistic brush strokes to our render. 
+		
+			<strong>[TODO Rohan to explain approach]</strong>. 
+		  
+		  We also implemented an algorithm to modify the original oil on canvas texture we obtained online. This involved first extracting areas with high-frequency content (i.e. edges) from the image we want to monet-ify. This was done by using <strong>OpenCV</strong> to compute horizontal and vertical gradients with <strong>cv2.Sobel</strong>, then combining them using linear interpolation with <strong>cv2.addWeighted</strong>, setting both <strong>alpha</strong> and <strong>beta</strong> to  <strong>0.5</strong>. This gave us a final image of all the edges in white on a black background, highlighting regions where we want brush strokes to be more pronounced. We then resized the oil texture image to match the dimensions of the edge image and blended the two using linear interpolation. For regions in the edge image that were entirely black, we filled them with a default <strong>RGB</strong> color of <strong>(200, 200, 200)</strong>. The resulting texture was saved and used for brush stroke generation, ensuring that high-frequency areas in the image receive more detailed and dynamic strokes. 
+		  
+		  <strong>[TODO Rohan add more on your approach]</strong>
+		</p>
 
 		<h2>Results</h2>
 
@@ -79,6 +113,7 @@
 			<li>OpenCV: <a href="https://opencv.org/">https://opencv.org/</a></li>
             <li>Sketching with OpenCV: <a href="https://medium.com/data-science/painting-and-sketching-with-opencv-in-python-4293026d78b">https://medium.com/data-science/painting-and-sketching-with-opencv-in-python-4293026d78b</a></li>
 			<li>OpenCV Image Gradients: <a href="https://pyimagesearch.com/2021/05/12/image-gradients-with-opencv-sobel-and-scharr/">https://pyimagesearch.com/2021/05/12/image-gradients-with-opencv-sobel-and-scharr/</a></li>
+			<li>Oil on Canvas Texture: <a href="https://t3.ftcdn.net/jpg/01/36/76/50/360_F_136765040_ZMLlLORWYJ2uROLcKMTwY0Iy9P6xEXcd.jpg">https://t3.ftcdn.net/jpg/01/36/76/50/360_F_136765040_ZMLlLORWYJ2uROLcKMTwY0Iy9P6xEXcd.jpg</a></li>
             <li>Color Register: <a href="https://color-register.org/color/">https://color-register.org/color/</a></li>
             <li>HTML Color Codes: <a href="https://htmlcolorcodes.com/colors/">https://htmlcolorcodes.com/colors/</a></li>
 		</ul>
@@ -88,7 +123,7 @@
 		<p>Rohan:</p>
 
 		
-		<p>Swetha:</p>
+		<p>Swetha: Swetha created the Monet-inspired color palette used in the final renders. She started by identifying Monet's most commonly used pigments—such as Titanium White, Cadmium Yellow, and French Ultramarine—and converting them into RGB values. To simulate natural color blending, she linearly interpolated between all pairs of these base colors using a range of weights. To match image pixels to their closest Monet palette color, Swetha converted both the image pixels and palette colors into the perceptually uniform CIELAB color space and calculated soft probabilities based on Euclidean distances. These probabilities were then used to assign each brush stroke a color that best reflected Monet's style. She also adapted the model's loss function to support the new palette. Additionally, Swetha implemented a Pointillism-inspired technique to vary brush stroke sizes based on image detail. She converted the image to grayscale, applied a Gaussian blur, computed image gradients using cv2.Scharr, and used the local gradient magnitude and direction to determine the orientation and scale of each stroke. Finally, Swetha re-oriented the oil-on-canvas texture strokes to match the target image's frequencies by computing horizontal and vertical edges with cv2.Sobel, combining them via cv2.addWeighted, and blending the result with a resized oil texture using linear interpolation. To avoid gaps, she filled empty edge map regions with a default RGB color. The final modified texture was then used in stroke generation, ensuring that the strokes aligned closely with the image's underlying structure.</p>
 
 
 		<p>Inas:</p>
