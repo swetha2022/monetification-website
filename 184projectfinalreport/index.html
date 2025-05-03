@@ -148,7 +148,7 @@
 
 		<h2>Team Member Contributions</h2>
 
-		<p>Rohan:</p>
+		<p>Rohan: Rohan implemented performance optimizations including vectorized operations with NumPy, a KD-Tree color matching system for faster color selection, and multiprocessing to parallelize brush stroke evaluation across CPU cores. These optimizations reduced processing times significantly. I also improved the impressionistic quality by merging the edge-aware texture with the oil-on-canvas texture and blending that with the final image, giving the artwork a monet feel to it.</p>
 		
 		<p>Swetha: Swetha designed the Monet-inspired color palette by identifying Monet's key pigments (e.g., Titanium White, Cadmium Yellow, French Ultramarine) and converting them to RGB. She simulated natural blending by linearly interpolating between these colors and matched image pixels to palette colors using soft probabilities in the CIELAB space. She modified the model's loss function to accommodate this palette. To emulate Pointillism, she varied brush stroke sizes based on grayscale image gradients (computed with Gaussian blur and cv2.Scharr), using gradient magnitude and direction to guide stroke orientation and scale. She also aligned texture strokes to the image's frequency structure by detecting edges with cv2.Sobel, blending them with a resized oil texture, and filling gaps with a default color. This final texture guided stroke generation to reflect both Monet's style and the image's form.</p>
 
