@@ -42,6 +42,10 @@
 		<h2>Abstract</h2>
 
 		<p>Our system creates impressionist renderings of real-life photographs similar to Claude Monet's work. This is both an important and fascinating challenge as having the capability to reinterpret images with Monet's impressionist style bridges two eras together, introducing artistic styles of the past to newer generations and connecting contemporary life with historical art. When people reimagine their own photos in past styles, they gain a deeper appreciation for the art. It also empowers creativity and provides interactive experiences of digital art to users. Our implementation uses techniques covered in class such as rasterization, sampling, antialiasing, low/high pass filters, coordinate system transforms, color theory, texture mapping, barycentric coordinates, and linear interpolation. The key challenge of this project was generating these impressionist renders while maintaining the integrity of the image.</p>
+		
+		<b>Starting Point:</b> We started this project completely from scratch. The entire codebase was written from the ground up, and we did not use any pre-existing cs184 or online code templates. We wanted to start from first principles so that we could build the best system possible, without being biased towards already working code.<br><b>What we Implemented:</b> We implemented all aspects of this project ourselves. From a high level, we build the rendering system using pygame, created a baseline image render using ellipses as primitive shapes, and then optimized towards Monet's artistic style from then on. We also incorporated multi-threading to speed up rendering times ourselves! A more detailed technical explanation of these topics is below.
+
+		<br><br><b>[INSERT BUNNY GIF]</b>
 
 		<h2>Technical Approach</h2>
 
@@ -50,60 +54,35 @@
 		<p> We developed the first version of our generative painting algorithm that reconstructs a reference image by iteratively adding ellipses to a blank canvas. We rely on a custom loss function that draws ellipses based on regions of the canvas that deviate most from a monet inspired function of target image. We measure this deviation using a mean squared error loss function that compares our in-progress canvas with a function of our input image:
 		
 		<figure>
-			<img src="images/ellipse_center_equation.png" alt="Image of tea plants" style="width:50%"/>
+			<img src="images/ellipse_center_equation.png" alt="Image of tea plants" style="width:50%;"/>
 		</figure><br>
-
-		Specifically, we start off with the approach below:<br><br>
 		
-		<div style="display: flex; flex-direction: column; align-items: center;">
+		<div style="display: flex; flex-direction: column; align-items: center; padding-bottom: 10px;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
 				<tr>
 					<td style="text-align: center;">
 						<img src="images/ellipse_mask3.jpeg" width="300px"/>
-						<figcaption><i>Choose (x, y, theta) -> Axis Align -> Create Mask</i></figcaption>
+						<figcaption><i>Mask Generation</i></figcaption>
 					</td>
 					<td style="text-align: center;">
 						<img src="images/ellipse_mask4.jpeg" width="200px"/>
-						<figcaption><i>Apply mask to image</i></figcaption>
+						<figcaption><i>Color Selection</i></figcaption>
 					</td>
 				</tr>
 			</table>
 		</div>
-
-		<figure>
-			<img src="images/ellipse_center_equation.png" alt="Image of tea plants" style="width:50%"/>
-		</figure><br>
 			
-		As shown in the images above, we start off generating an ellipse with a random location and random orientation(theta). To create a discretized version of the image, we figure out what the average color of the image within this ellipse is. Since we've created the mask, we can average the colors in this region to figure out what color the ellipse should be when painted on the canvas. We repeat this process multiple times, updating the canvas and choosing new ellipses. Some challenges we faced initially were that portions of the image remained unpainted even after significant render time. To improve efficiency, prevent redundant rendering, and ensure all parts of the image were covered, we implemented a z-buffer that tracks untouched pixels. Every time an ellipse is drawn, we increment the value of all indeces within that region. When choosing an ellipse to draw, we bias our distribution towards regions with the lowest values. This prioritizes parts of our canvas that are unpainted. Once we were able to generate intial versions of our image, we noticed that our generated image wasn't appropriately rendering high frequency parts of our image. For detailed parts of the image like eyes, trees, or small figures, we need to render at a higher density(smaller ellipses) than low frequency parts of the image(sky, ocean, etc...). To address this, we implemented gradient based rendering. 
+		As shown in the images above, we start off generating an ellipse with a random location and random orientation(theta). To create a discretized version of the image, we figure out what the average color of the image within this ellipse is. Since we've created the mask, we can average the colors in this region to figure out what color the ellipse should be when painted on the canvas. We repeat this process multiple times, updating the canvas and choosing new ellipses. Some challenges we faced initially were that portions of the image remained unpainted even after significant render time. To improve efficiency, prevent redundant rendering, and ensure all parts of the image were covered, we implemented a z-buffer that tracks untouched pixels. Every time an ellipse is drawn, we increment the value of all indeces within that region. When choosing an ellipse to draw, we bias our distribution towards regions with the lowest values. This prioritizes parts of our canvas that are unpainted. Once we were able to generate intial versions of our image, we noticed that our generated image wasn't appropriately rendering high frequency parts of our image. For detailed parts of the image like eyes, trees, or smaller figures, we need to render at a higher density(smaller ellipses). For low frequency parts of the image(sky, ocean, etc...) we can render with less density. To address this, we implemented gradient based rendering with Pointillism. 
 		
 		<h3>Gradient Based Rendering:</h3>
 
 		To vary ellipse sizes based on local image detail, we implemented a Pointillism-inspired algorithm. The input image was first converted to grayscale and smoothed with a Gaussian blur (<strong>cv2.GaussianBlur</strong>) using a <strong>gradient_smoothing_radius</strong>. We then computed image gradients using <strong>cv2.Scharr</strong> to construct a vector field of color directions. Each candidate ellipse center was assigned a size and orientation based on local gradient magnitude and direction, scaled by a <strong>stroke_scale</strong> parameter.</p>
 		  
-		<pre><code>
-		<strong>length = int(round(args.stroke_scale + args.stroke_scale * math.sqrt(gradient.magnitude(center[1], center[0]))))</strong>
-
-		<strong>angle = gradient.direction(center[1], center[0]) + (np.pi / 2)</strong> 
-		<strong>size = (length, args.stroke_scale)</strong>
-		</code></pre>
-
-		<p>
-		The <strong>magnitude</strong> and <strong>direction</strong> functions were defined as:
-		</p>
-		
-		<pre><code>
-		<strong>def direction(self, i, j):</strong>
-			<strong>return math.atan2(self.fieldy[i, j], self.fieldx[i, j])</strong>
-
-		<strong>def magnitude(self, i, j):</strong>
-			<strong>return math.hypot(self.fieldx[i, j], self.fieldy[i, j])</strong>
-		</code></pre>
+		<figure>
+			<img src="images/stroke_scale_eq.png" alt="Image of tea plants" style="width:50%;"/>
+		</figure>
 		
 		<p>This approach ensures that areas with sharp transitions produce smaller, more detailed ellipses, while smoother regions use larger ellipses—preserving essential visual structure in the final rendering. As you can see in the next iteration of our render, ellipses in the sky tend to follow the orientation of the color gradient much more closely, and are almost all horizontal. However, looking at the tree, we notice that the ellipses follow the tree's color gradient which is largely vertical. This approach makes our images look closer to a painter's technique, where the artist paints brush strokes in the direction of that color in their subject.</p>
-		
-		<figure>
-			<img src="images/gradient_image_ex.jpg" alt="Image of tea plants" style="width:40%"/>
-		</figure><br>
 
 		<h3>Color Palette Optimization:</h3>
 
@@ -119,56 +98,61 @@
 		<h3>Optimizations:</h3> 
 		<p>Our algorithm achieves significant performance improvements through three key optimizations. First, we implemented extensive vectorization using NumPy, replacing slow pixel-by-pixel operations with parallel array manipulations for tasks like ellipse mask creation. Second, we optimized color palette matching by using a kd-tree spatial index (cKDTree) in LAB color space, which dramatically accelerates finding the nearest Monet color for each pixel by reducing the complexity from O(n) to O(log n) while ensuring perceptually accurate color selection. Third, we leveraged multiprocessing with a worker pool to parallelize the most computationally expensive part of the algorithm—-evaluating multiple candidate brush strokes across multiple CPU cores simultaneously.</p>
 		<h2>Results</h2>
-
-        <p>Below are some examples of images and their Monetified renders:</p>
 		
-		<!-- <div style="display: flex; flex-direction: column; align-items: center;">
+		<div style="display: flex; flex-direction: column; align-items: center;">
 			<table style="width: 100%; text-align: center; border-collapse: collapse;">
               <tr>
 				<td style="text-align: center;">
-				  <img src="./imgs/image3.jpg" width="400px"/>
-				  <figcaption><i>Trees</i></figcaption>
+				  <img src="images/image3.jpg" width="400px"/>
+				  <figcaption><i>Input Image</i></figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="./renders/render_image3.jpg" width="400px"/>
-				  <figcaption><i>Monetified Trees Render</i></figcaption>
+				  <img src="images/render_image3.jpg" width="400px"/>
+				  <figcaption><i>Rendered Image</i></figcaption>
+				</td>
+			  </tr>
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/image4.jpg" width="400px"/>
+				  <figcaption><i>Input Image</i></figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/render_image4.jpg" width="400px"/>
+				  <figcaption><i>Rendered Image</i></figcaption>
 				</td>
 			  </tr>
 			</table>
-		</div> -->
-
-		<p>Below is a video clip of our render generation:</p>
+		</div>
 
 		<h2>References</h2>
-		
-		<ul>
-            <li>Pointillism: <a href ="https://github.com/matteo-ronchetti/Pointillism/tree/master">https://github.com/matteo-ronchetti/Pointillism/tree/master</a></li>
-			<li>Stroke based rendering: <a href="https://www.cs.ucdavis.edu/~ma/SIGGRAPH02/course23/notes/S02c23_3.pdf">https://www.cs.ucdavis.edu/~ma/SIGGRAPH02/course23/notes/S02c23_3.pdf</a></li>
-			<li>Characteristics of impressionism for reference: <a href="https://arthistorywithalder.com/impressionism-art-characteristics/">https://arthistorywithalder.com/impressionism-art-characteristics/</a></li>
-			<li>PBRT to refer to in times of crisis: <a href="https://www.pbrt.org/">https://www.pbrt.org/</a></li>
-            <li>Monet Palette: <a href="https://www.overstockart.com/blog/analyzing-claude-monet-oil-paintings-colors-subjects-and-misconceptions/?srsltid=AfmBOopZ6UeVva4BdzFxD8vAmUKjfVRveC5rqbAPYdhM7sCOm8r6zvDF">https://www.overstockart.com/blog/analyzing-claude-monet-oil-paintings-colors-subjects-and-misconceptions/?srsltid=AfmBOopZ6UeVva4BdzFxD8vAmUKjfVRveC5rqbAPYdhM7sCOm8r6zvDF</a></li>
-			<li>OpenCV: <a href="https://opencv.org/">https://opencv.org/</a></li>
-            <li>Sketching with OpenCV: <a href="https://medium.com/data-science/painting-and-sketching-with-opencv-in-python-4293026d78b">https://medium.com/data-science/painting-and-sketching-with-opencv-in-python-4293026d78b</a></li>
-			<li>OpenCV Image Gradients: <a href="https://pyimagesearch.com/2021/05/12/image-gradients-with-opencv-sobel-and-scharr/">https://pyimagesearch.com/2021/05/12/image-gradients-with-opencv-sobel-and-scharr/</a></li>
-			<li>Oil on Canvas Texture: <a href="https://t3.ftcdn.net/jpg/01/36/76/50/360_F_136765040_ZMLlLORWYJ2uROLcKMTwY0Iy9P6xEXcd.jpg">https://t3.ftcdn.net/jpg/01/36/76/50/360_F_136765040_ZMLlLORWYJ2uROLcKMTwY0Iy9P6xEXcd.jpg</a></li>
-            <li>Color Register: <a href="https://color-register.org/color/">https://color-register.org/color/</a></li>
-            <li>HTML Color Codes: <a href="https://htmlcolorcodes.com/colors/">https://htmlcolorcodes.com/colors/</a></li>
-		</ul>
+
+		<div style="display: flex;">
+			<ul style="flex: 1;">
+				<li>Pointillism: <a href="https://github.com/matteo-ronchetti/Pointillism/tree/master">link</a></li>
+				<li>Stroke based rendering: <a href="https://www.cs.ucdavis.edu/~ma/SIGGRAPH02/course23/notes/S02c23_3.pdf">link</a></li>
+				<li>Characteristics of impressionism for reference: <a href="https://arthistorywithalder.com/impressionism-art-characteristics/">link</a></li>
+				<li>PBRT to refer to in times of crisis: <a href="https://www.pbrt.org/">link</a></li>
+				<li>Monet Palette: <a href="https://www.overstockart.com/blog/analyzing-claude-monet-oil-paintings-colors-subjects-and-misconceptions/?srsltid=AfmBOopZ6UeVva4BdzFxD8vAmUKjfVRveC5rqbAPYdhM7sCOm8r6zvDF">link</a></li>
+			</ul>
+			<ul style="flex: 1;">
+				<li>OpenCV: <a href="https://opencv.org/">link</a></li>
+				<li>Sketching with OpenCV: <a href="https://medium.com/data-science/painting-and-sketching-with-opencv-in-python-4293026d78b">link</a></li>
+				<li>OpenCV Image Gradients: <a href="https://pyimagesearch.com/2021/05/12/image-gradients-with-opencv-sobel-and-scharr/">link</a></li>
+				<li>Oil on Canvas Texture: <a href="https://t3.ftcdn.net/jpg/01/36/76/50/360_F_136765040_ZMLlLORWYJ2uROLcKMTwY0Iy9P6xEXcd.jpg">link</a></li>
+				<li>Color Register: <a href="https://color-register.org/color/">link</a></li>
+				<li>HTML Color Codes: <a href="https://htmlcolorcodes.com/colors/">link</a></li>
+			</ul>
+		</div>
 
 		<h2>Team Member Contributions</h2>
 
 		<p>Rohan:</p>
-
 		
 		<p>Swetha: Swetha created the Monet-inspired color palette used in the final renders. She started by identifying Monet's most commonly used pigments—such as Titanium White, Cadmium Yellow, and French Ultramarine—and converting them into RGB values. To simulate natural color blending, she linearly interpolated between all pairs of these base colors using a range of weights. To match image pixels to their closest Monet palette color, Swetha converted both the image pixels and palette colors into the perceptually uniform CIELAB color space and calculated soft probabilities based on Euclidean distances. These probabilities were then used to assign each brush stroke a color that best reflected Monet's style. She also adapted the model's loss function to support the new palette. Additionally, Swetha implemented a Pointillism-inspired technique to vary brush stroke sizes based on image detail. She converted the image to grayscale, applied a Gaussian blur, computed image gradients using cv2.Scharr, and used the local gradient magnitude and direction to determine the orientation and scale of each stroke. Finally, Swetha re-oriented the oil-on-canvas texture strokes to match the target image's frequencies by computing horizontal and vertical edges with cv2.Sobel, combining them via cv2.addWeighted, and blending the result with a resized oil texture using linear interpolation. To avoid gaps, she filled empty edge map regions with a default RGB color. The final modified texture was then used in stroke generation, ensuring that the strokes aligned closely with the image's underlying structure.</p>
 
-
 		<p>Inas:</p>
 
-
-		<p>Mihir:</p>
-
-
+		<p>Mihir: Mihir started off this project by implementing the rendering framework using pygame and Pillow. This code created a blank canvas and ran a simulation to render n primitive ellipses to match our input image. This required writing the main display look that iteratively built the canvas by computed the loss from our monet-transformed reference image. Mihir then worked on rendering visualization and parameterized the code to save images with varying quality. For optimization, he worked on implementing the z-buffer system we used to ensure all parts of the image are painted over.</p>
 
 		</div>
 	</body>
