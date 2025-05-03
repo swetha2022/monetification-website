@@ -45,20 +45,7 @@
 		
 		<b>Starting Point:</b> We started this project completely from scratch. The entire codebase was written from the ground up, and we did not use any pre-existing cs184 or online code templates. We wanted to start from first principles so that we could build the best system possible, without being biased towards already working code.<br><b>What we Implemented:</b> We implemented all aspects of this project ourselves. From a high level, we build the rendering system using pygame, created a baseline image render using ellipses as primitive shapes, and then optimized towards Monet's artistic style from then on. We also incorporated multi-threading to speed up rendering times ourselves! A more detailed technical explanation of these topics is below.
 
-		<div style="display: flex; flex-direction: column; align-items: center; padding-top: 15px;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-				<tr>
-					<td style="text-align: center;">
-						<img src="images/image4.jpg" width="400px"/>
-						<figcaption><i>Before</i></figcaption>
-					</td>
-					<td style="text-align: center;">
-						<img src="images/render_image4.jpg" width="400px"/>
-						<figcaption><i>After</i></figcaption>
-					</td>
-				</tr>
-			</table>
-		</div>
+		<br><br><b>[INSERT BUNNY GIF]</b>
 
 		<h2>Technical Approach</h2>
 
@@ -91,24 +78,9 @@
 
 		To vary ellipse sizes based on local image detail, we implemented a Pointillism-inspired algorithm. The input image was first converted to grayscale and smoothed with a Gaussian blur (<strong>cv2.GaussianBlur</strong>) using a <strong>gradient_smoothing_radius</strong>. We then computed image gradients using <strong>cv2.Scharr</strong> to construct a vector field of color directions. Each candidate ellipse center was assigned a size and orientation based on local gradient magnitude and direction, scaled by a <strong>stroke_scale</strong> parameter.</p>
 		  
-		<pre><code>
-		<strong>length = int(round(args.stroke_scale + args.stroke_scale * math.sqrt(gradient.magnitude(center[1], center[0]))))</strong>
-
-		<strong>angle = gradient.direction(center[1], center[0]) + (np.pi / 2)</strong> 
-		<strong>size = (length, args.stroke_scale)</strong>
-		</code></pre>
-
-		<p>
-		The <strong>magnitude</strong> and <strong>direction</strong> functions were defined as:
-		</p>
-		
-		<pre><code>
-		<strong>def direction(self, i, j):</strong>
-			<strong>return math.atan2(self.fieldy[i, j], self.fieldx[i, j])</strong>
-
-		<strong>def magnitude(self, i, j):</strong>
-			<strong>return math.hypot(self.fieldx[i, j], self.fieldy[i, j])</strong>
-		</code></pre>
+		<figure>
+			<img src="images/stroke_scale_eq.png" alt="Image of tea plants" style="width:50%;"/>
+		</figure>
 		
 		<p>This approach ensures that areas with sharp transitions produce smaller, more detailed ellipses, while smoother regions use larger ellipses—preserving essential visual structure in the final rendering. As you can see in the next iteration of our render, ellipses in the sky tend to follow the orientation of the color gradient much more closely, and are almost all horizontal. However, looking at the tree, we notice that the ellipses follow the tree's color gradient which is largely vertical. This approach makes our images look closer to a painter's technique, where the artist paints brush strokes in the direction of that color in their subject.</p>
 
@@ -143,18 +115,16 @@
 			  </tr>
 			  <tr>
 				<td style="text-align: center;">
-				  <img src="images/image6.jpg" width="400px"/>
+				  <img src="images/image4.jpg" width="400px"/>
 				  <figcaption><i>Input Image</i></figcaption>
 				</td>
 				<td style="text-align: center;">
-				  <img src="images/render_image6.jpg" width="400px"/>
+				  <img src="images/render_image4.jpg" width="400px"/>
 				  <figcaption><i>Rendered Image</i></figcaption>
 				</td>
 			  </tr>
 			</table>
 		</div>
-
-		<p>Below is a video of our image generation</p>
 
 		<h2>References</h2>
 
