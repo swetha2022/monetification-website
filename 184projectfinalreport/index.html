@@ -92,6 +92,21 @@
 
 		<p> Our next step was to design a new color palette based on Monet's most frequently used pigments: Titanium White, Cadmium Yellow Light, Cadmium Yellow, Viridian Green, Emerald Green, French Ultramarine, Cobalt Blue, Madder Red, Vermillion, and Ivory Black. We obtained RGB values for each of these colors and stored them in a dictionary with the color names as keys. To simulate the effect of mixing colors in a physical palette, we generated intermediate hues by linearly interpolating between every pair of base colors using weights from <strong>np.linspace(0.05, 0.95, 19)</strong>. This process produced a richer and more continuous range of blended colors. For each pixel in the original image, we computed soft similarity probabilities to each color in our expanded Monet palette. To ensure perceptual accuracy, we first converted both the original image colors and palette colors from RGB to the <strong>CIELAB</strong> color space—a perceptually uniform space—before computing Euclidean distances. These distances were then used to assign soft similarity weights. For each ellipse, we mapped the pixel colors within its region to their most probable Monet matches using this probability matrix. The color of the ellipse was then set to the average of these matched palette colors. We also modified our loss to be calculated as the sum of squared differences between the candidate canvas and a version of the reference image where each pixel has been replaced with its closest Monet-inspired color. This encourages the generated image to match the style and palette of Monet rather than the original image.
 		
+		<div style="display: flex; flex-direction: column; align-items: center; padding-bottom: 10px;">
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+				<tr>
+					<td style="text-align: center;">
+						<img src="images/lake_before.png" width="300px"/>
+						<figcaption><i>Before Gradient-Based Rendering and Color Palette Optimization </i></figcaption>
+					</td>
+					<td style="text-align: center;">
+						<img src="images/lake_after.jpg" width="200px"/>
+						<figcaption><i>After Gradient-Based Rendering and Color Palette Optimization</i></figcaption>
+					</td>
+				</tr>
+			</table>
+		</div>
+
 		<h3>Realistic Brush Strokes:</h3>
 
 		<p>To make the output resemble a painting more closely, we added realistic brush strokes to our render. 
