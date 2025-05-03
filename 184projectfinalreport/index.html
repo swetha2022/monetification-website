@@ -9,7 +9,7 @@
 
 			.container {
 				margin: 0 auto;
-				padding: 60px 20%;
+				padding: 0px 0%;
 			}
 
 			figure {
@@ -94,6 +94,48 @@
 		  We also implemented an algorithm to modify the original oil on canvas texture we obtained as a result of our milestone feedback. This involved first extracting areas with high-frequency content (i.e. edges) from the image we want to monet-ify. This was done by using <strong>OpenCV</strong> to compute horizontal and vertical gradients with <strong>cv2.Sobel</strong>, then combining them using linear interpolation with <strong>cv2.addWeighted</strong>, setting both <strong>alpha</strong> and <strong>beta</strong> to  <strong>0.5</strong>. This gave us a final image of all the edges in white on a black background, highlighting regions where we want brush strokes to be more pronounced. We then resized the oil texture image to match the dimensions of the edge image and blended the two using linear interpolation. For regions in the edge image that were entirely black, we filled them with a default <strong>RGB</strong> color of <strong>(200, 200, 200)</strong>. The resulting texture was saved and used for brush stroke generation, ensuring that high-frequency areas in the image receive more detailed and dynamic strokes. 
 		  Finally, our apply_canvas_texture function applies a subtle canvas-like texture to the input image by blending it with the texture image created. The texture is first resized to match the input image and converted to grayscale to avoid introducing color changes. Both the image and texture are converted to NumPy arrays to allow pixel-wise blending. The texture is then merged with the original image using a weighted average controlled by the strength parameter, which determines how prominent the texture appears. Finally, the result is clipped to valid pixel values and converted back to a PIL image. This technique gives the final image a natural, printed-on-canvas look without altering the original colors significantly. 
 		</p>
+
+		<div style="display: flex; flex-direction: column; align-items: center;">
+  
+			<!-- First row centered using flex -->
+			<div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px;">
+			  <div style="text-align: center;">
+				<img src="images/image8.jpg" width="250px"/>
+				<figcaption><i>Input Image</i></figcaption>
+			  </div>
+			  <div style="text-align: center;">
+				<img src="images/pre_texture_image8.jpg" width="250px"/>
+				<figcaption><i>Pre-textured image</i></figcaption>
+			  </div>
+			  <div style="text-align: center;">
+				<img src="images/render_image8.jpg" width="250px"/>
+				<figcaption><i>Final Render</i></figcaption>
+			  </div>
+			</div>
+		  
+			<!-- Second row remains a table -->
+			<table style="width: 100%; text-align: center; border-collapse: collapse;">
+			  <tr>
+				<td style="text-align: center;">
+				  <img src="images/oil_image.jpg" width="200px"/>
+				  <figcaption><i>Oil on Canvas Texture</i></figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/edges.jpg" width="200px"/>
+				  <figcaption><i>High Frequency Image</i></figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/texture_reoriented.png" width="200px"/>
+				  <figcaption><i>Edge-Aware Texture</i></figcaption>
+				</td>
+				<td style="text-align: center;">
+				  <img src="images/combined_texture.jpg" width="200px"/>
+				  <figcaption><i>Combined, Strengthened Texture</i></figcaption>
+				</td>
+			  </tr>
+			</table>
+		  </div>
+		  
 
 		<h3>Optimizations:</h3> 
 		<p>Our algorithm achieves significant performance improvements through three key optimizations. First, we implemented extensive vectorization using NumPy, replacing slow pixel-by-pixel operations with parallel array manipulations for tasks like ellipse mask creation. Second, we optimized color palette matching by using a kd-tree spatial index (cKDTree) in LAB color space, which dramatically accelerates finding the nearest Monet color for each pixel by reducing the complexity from O(n) to O(log n) while ensuring perceptually accurate color selection. Third, we leveraged multiprocessing with a worker pool to parallelize the most computationally expensive part of the algorithm—-evaluating multiple candidate brush strokes across multiple CPU cores simultaneously.</p>
