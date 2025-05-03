@@ -9,7 +9,7 @@
 
 			.container {
 				margin: 0 auto;
-				padding: 0px 0%;
+				padding: 60px 20%;
 			}
 
 			figure {
@@ -31,9 +31,9 @@
 		<div style="text-align: center;">Names: Rohan Aanegola, Swetha Rajkumar, Inas Zulaikha Anwar, Mihir Rao</div>
 
 		<br>
-		Link to Webpage: <a href="https://swetha2022.github.io/monetification-website/184projectmilestone/">https://swetha2022.github.io/monetification-website/184projectmilestone/</a><br>
-        Link to Project Video Slides: <a href="https://docs.google.com/presentation/d/1A60O-lusOFJWJjtaC7iy3ZVPK37Pw2YcsaYU_26AQHw/edit?usp=sharing">https://docs.google.com/presentation/d/1A60O-lusOFJWJjtaC7iy3ZVPK37Pw2YcsaYU_26AQHw/edit?usp=sharing</a><br>
-        Link to Project Video Recording: <a href="https://drive.google.com/file/d/1OMpukEdlFDMvbpen4X5DGznMRdn7cy19/view?usp=sharing">https://drive.google.com/file/d/1OMpukEdlFDMvbpen4X5DGznMRdn7cy19/view?usp=sharing</a>
+		Link to Webpage: <a href="https://swetha2022.github.io/monetification-website/184finalprojectmilestone/">https://swetha2022.github.io/monetification-website/184finalprojectmilestone/</a><br>
+        Link to Project Video Slides: <a href="https://docs.google.com/presentation/d/1J19OT7mVR7-v2TZVXP-MnhZkKalv9k_W3r0nj65pMR4/edit?usp=sharing">link</a><br>
+        Link to Project Video Recording: <a href="https://drive.google.com/file/d/1OMpukEdlFDMvbpen4X5DGznMRdn7cy19/view?usp=sharing">TODO</a><br>
 		<br>
 
 		<!--
@@ -45,7 +45,11 @@
 		
 		<b>Starting Point:</b> We started this project completely from scratch. The entire codebase was written from the ground up, and we did not use any pre-existing cs184 or online code templates. We wanted to start from first principles so that we could build the best system possible, without being biased towards already working code.<br><b>What we Implemented:</b> We implemented all aspects of this project ourselves. From a high level, we build the rendering system using pygame, created a baseline image render using ellipses as primitive shapes, and then optimized towards Monet's artistic style from then on. We also incorporated multi-threading to speed up rendering times ourselves! A more detailed technical explanation of these topics is below.
 
-		<br><br><b>[INSERT BUNNY GIF]</b>
+		<div style="display: flex; flex-direction: column; align-items: center; padding-bottom: 10px;">
+			<video width="480" style="text-align: center; margin-top: 20px;" controls autoplay muted>
+				<source src="images/demo_img8.mp4" type="video/mp4">
+			</video>
+		</div>
 
 		<h2>Technical Approach</h2>
 
@@ -190,11 +194,11 @@
 
 		<h2>Team Member Contributions</h2>
 
-		<p>Rohan: Rohan implemented performance optimizations including vectorized operations with NumPy, a KD-Tree color matching system for faster color selection, and multiprocessing to parallelize brush stroke evaluation across CPU cores. These optimizations reduced processing times significantly. I also improved the impressionistic quality by merging the edge-aware texture with the oil-on-canvas texture and blending that with the final image, giving the artwork a monet feel to it.</p>
+		<p>Rohan: Rohan implemented performance optimizations including vectorized operations with NumPy, a KD-Tree color matching system for faster color selection, and multiprocessing to parallelize brush stroke evaluation across CPU cores. These optimizations reduced processing times significantly. Rohan also improved the impressionistic quality by merging the edge-aware texture with the oil-on-canvas texture and blending that with the final image, giving the artwork a monet feel to it.</p>
 		
 		<p>Swetha: Swetha designed the Monet-inspired color palette by identifying Monet's key pigments (e.g., Titanium White, Cadmium Yellow, French Ultramarine) and converting them to RGB. She simulated natural blending by linearly interpolating between these colors and matched image pixels to palette colors using soft probabilities in the CIELAB space. She modified the model's loss function to accommodate this palette. To emulate Pointillism, she varied brush stroke sizes based on grayscale image gradients (computed with Gaussian blur and cv2.Scharr), using gradient magnitude and direction to guide stroke orientation and scale. She also aligned texture strokes to the image's frequency structure by detecting edges with cv2.Sobel, blending them with a resized oil texture, and filling gaps with a default color. This final texture guided stroke generation to reflect both Monet's style and the image's form.</p>
 
-		<p>Inas:</p>
+		<p>Inas: Inas explored alternative approaches to color matching and stroke generation to verify the effectiveness of the final pipeline. She experimented with RGB-based nearest neighbor color selection and k-nearest neighbors blending to simulate pigment mixing, but found these methods less effective than CIELAB. These tests validated the decision to use soft similarity probabilities for color matching. She also documented the demo pipeline and timelapse rendering for recording purposes, consolidated rresults into the project slides, and prepared the materials used to narrate and clearly explain the rendering process.</p>
 
 		<p>Mihir: Mihir started off this project by implementing the rendering framework using pygame and Pillow. This code created a blank canvas and ran a simulation to render n primitive ellipses to match our input image. This required writing the main display look that iteratively built the canvas by computed the loss from our monet-transformed reference image. Mihir then worked on rendering visualization and parameterized the code to save images with varying quality. For optimization, he worked on implementing the z-buffer system we used to ensure all parts of the image are painted over.</p>
 
