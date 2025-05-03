@@ -41,7 +41,7 @@
 		-->
 		<h2>Abstract</h2>
 
-		<p>Our system creates impressionist renderings of real-life photographs similar to Claude Monet's work. This is both an important and fascinating challenge as having the capability to reinterpret images with Monet's impressionist style bridges two eras together, introducing artistic styles of the past to newer generations and connecting contemporary life with historical art. When people reimagine their own photos in past styles, they gain a deeper appreciation for the art. It also empowers creativity and provides interactive experiences of digital art to users. Our implementation uses techniques covered in class such as rasterization, sampling, antialiasing, low/high pass filters, coordinate system transforms, color theory, texture mapping, barycentric coordinates, and linear interpolation. The key challenge of this project was generating these impressionist renders while maintaining the integrity of the image.</p>
+		<p>Our system creates impressionist renderings of real-life photographs similar to Claude Monet's work. This is both an important and fascinating challenge as having the capability to reinterpret images with Monet's impressionist style bridges two eras together, introducing artistic styles of the past to newer generations and connecting contemporary life with historical art. When people reimagine their own photos in past styles, they gain a deeper appreciation for the art. It also empowers creativity and provides interactive experiences of digital art to users. Our implementation uses techniques covered in class such as rasterization, sampling, antialiasing, low/high pass filters, KDTrees, coordinate system transforms, color theory, texturing, and linear interpolation. The key challenge of this project was generating these impressionist renders while maintaining the integrity of the image.</p>
 		
 		<b>Starting Point:</b> We started this project completely from scratch. The entire codebase was written from the ground up, and we did not use any pre-existing cs184 or online code templates. We wanted to start from first principles so that we could build the best system possible, without being biased towards already working code.<br><b>What we Implemented:</b> We implemented all aspects of this project ourselves. From a high level, we build the rendering system using pygame, created a baseline image render using ellipses as primitive shapes, and then optimized towards Monet's artistic style from then on. We also incorporated multi-threading to speed up rendering times ourselves! A more detailed technical explanation of these topics is below.
 
@@ -97,15 +97,15 @@
 				<tr>
 					<td style="text-align: center;">
 						<img src="images/lake_original.jpg" width="300px"/>
-						<figcaption><i>Before Gradient-Based Rendering and Color Palette Optimization </i></figcaption>
+						<figcaption><i>Input Image </i></figcaption>
 					</td>
 					<td style="text-align: center;">
 						<img src="images/lake_before.png" width="300px"/>
-						<figcaption><i>Before Gradient-Based Rendering and Color Palette Optimization </i></figcaption>
+						<figcaption><i>Rendered Image Before Gradient-Based Rendering and Color Palette Optimization </i></figcaption>
 					</td>
 					<td style="text-align: center;">
 						<img src="images/lake_after.jpg" width="300px"/>
-						<figcaption><i>After Gradient-Based Rendering and Color Palette Optimization</i></figcaption>
+						<figcaption><i>Rendered Image After Gradient-Based Rendering and Color Palette Optimization</i></figcaption>
 					</td>
 				</tr>
 			</table>
